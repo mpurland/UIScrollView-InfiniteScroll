@@ -36,20 +36,18 @@ static NSString* const kFlickrAPIEndpoint = @"https://api.flickr.com/services/fe
     self.flickrFeedModifiedAt = [NSDate distantPast];
     self.cache = [NSCache new];
     
-    // Create custom indicator
-    CustomInfiniteIndicator *indicator = [[CustomInfiniteIndicator alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-    
     // Set custom indicator
-    self.collectionView.infiniteScrollIndicatorView = indicator;
+    self.collectionView.infiniteScrollIndicatorTopView = [[CustomInfiniteIndicator alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    self.collectionView.infiniteScrollIndicatorBottomView = [[CustomInfiniteIndicator alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
     
     // Increase indicator margins
     self.collectionView.infiniteScrollIndicatorMargin = 20;
     
     // Add infinite scroll handler
-    [self.collectionView addInfiniteScrollWithHandler:^(UICollectionView *collectionView) {
+    [self.collectionView addInfiniteScrollBottomWithHandler:^(UICollectionView *collectionView) {
         [weakSelf loadFlickrFeedWithDelay:YES completion:^{
             // Finish infinite scroll animations
-            [collectionView finishInfiniteScroll];
+            [collectionView finishInfiniteScrollBottom];
         }];
     }];
     
@@ -153,7 +151,7 @@ static NSString* const kFlickrAPIEndpoint = @"https://api.flickr.com/services/fe
     static dispatch_queue_t downloadQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        downloadQueue = dispatch_queue_create("ru.codeispoetry.downloadQueue", 0);
+        downloadQueue = dispatch_queue_create("ru.codeispoetry.downloadQueue", DISPATCH_QUEUE_CONCURRENT);
     });
     
     dispatch_async(downloadQueue, ^{
